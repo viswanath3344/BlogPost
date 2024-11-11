@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Button, FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Button, FlatList, StyleSheet, Text, View } from "react-native";
 import PostRow from "./components/PostRow";
 import BlogContext from "./context/BlogContext";
 
