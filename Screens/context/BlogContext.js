@@ -1,6 +1,4 @@
-import React, { useReducer } from "react";
-
-const BlogContext = React.createContext();
+import createDataContext from "./createDataContext";
 
 const blogPostReducer = (posts, action) => {
     switch (action.type) {
@@ -8,26 +6,49 @@ const blogPostReducer = (posts, action) => {
             return [
                 ...posts,
                 {
-                    id: posts.length + 1,
-                    title: `Post # ${posts.length + 1}`,
-                    message: `Post Message #${posts.length + 1}`
+                    id: Math.floor((Math.random() * 1000) + 1), // create a random number between 1~1000
+                    title: action.payload.title,
+                    message: action.payload.message
                 }
             ];
+            case 'edit': 
+              return posts.map((post)=> {
+                if (post.id == action.payload.id) {
+                    let result =  {...post, title: action.payload.title, message: action.payload.message} 
+                    return result;
+                }else {
+                    return post;
+                }
+              })
+            case 'delete': 
+             return posts.filter((post) => { return post.id !== action.payload})
         case 'default':
             return posts
     }
 }
 
-export const BlogProvider = ({ children }) => {
-    const [posts, dispatch] = useReducer(blogPostReducer, [])
-
-    const addPost = () => {
-        dispatch({type: "add"})
-    }
-
-    return <BlogContext.Provider value={{ data: posts, addPost}}>
-        {children}
-    </BlogContext.Provider>
+const addPost = (dispatch) => {
+    return (title, message, callback) => {
+        dispatch({ type: "add" , payload: {title, message}})
+        callback();
+    };
 };
 
-export default BlogContext;
+const editPost = (dispatch) => {
+    return (id, title, message, callback) => {
+        dispatch({ type: "edit" , payload: {id, title, message}})
+        callback();
+    };
+};
+
+const deletePost = (dispatch) => {
+    return (postId) => {
+        dispatch({ type: "delete", payload: postId })
+    };
+};
+
+export const { Context, Provider } = createDataContext(
+    blogPostReducer,
+    { addPost, deletePost, editPost },
+    []
+);
