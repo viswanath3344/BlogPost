@@ -14,8 +14,7 @@ const blogPostReducer = (posts, action) => {
             case 'edit': 
               return posts.map((post)=> {
                 if (post.id == action.payload.id) {
-                    let result =  {...post, title: action.payload.title, message: action.payload.message} 
-                    return result;
+                    return action.payload;
                 }else {
                     return post;
                 }
@@ -29,15 +28,19 @@ const blogPostReducer = (posts, action) => {
 
 const addPost = (dispatch) => {
     return (title, message, callback) => {
-        dispatch({ type: "add" , payload: {title, message}})
-        callback();
+        dispatch({ type: "add", payload: { title, message } })
+        if (callback) {
+            callback();
+        }
     };
 };
 
 const editPost = (dispatch) => {
     return (id, title, message, callback) => {
-        dispatch({ type: "edit" , payload: {id, title, message}})
-        callback();
+        dispatch({ type: "edit", payload: { id, title, message } })
+        if (callback) {
+            callback();
+        }
     };
 };
 
