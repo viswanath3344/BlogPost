@@ -6,9 +6,6 @@ const AddPost = ({ navigation }) => {
     const { addPost } = useContext(Context);
 
     return <PostForm
-        formTitle="Add Post"
-        defaultTitle=""
-        defaultmessage=""
         action={(title, message) => {
             addPost(title, message, () => {
                 navigation.pop();

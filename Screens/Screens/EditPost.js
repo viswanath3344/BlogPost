@@ -11,10 +11,12 @@ const EditPost = ({ route, navigation }) => {
 
     return (
         <PostForm
-            formTitle="Edit Post"
-            defaultTitle={selectedPost.title}
-            defaultMessage={selectedPost.message}
-            action={(title, message) => {
+        initialValues = {{
+            formTitle: "Edit Post", 
+            title:selectedPost.title, 
+            message:selectedPost.message 
+        }}
+        action={(title, message) => {
                 editPost(selectedPost.id, title, message, () => {
                     navigation.popToTop();
                 })
