@@ -1,17 +1,11 @@
 import createDataContext from "./createDataContext";
+import Jsonserver from "../api/Jsonserver";
 
 const blogPostReducer = (posts, action) => {
     switch (action.type) {
-        case 'add':
-            return [
-                ...posts,
-                {
-                    id: Math.floor((Math.random() * 1000) + 1), // create a random number between 1~1000
-                    title: action.payload.title,
-                    message: action.payload.message
-                }
-            ];
-            case 'edit': 
+        case 'getPosts': 
+        return action.payload;
+        case 'edit': 
               return posts.map((post)=> {
                 if (post.id == action.payload.id) {
                     return action.payload;
@@ -26,17 +20,33 @@ const blogPostReducer = (posts, action) => {
     }
 }
 
+const getBlogPosts = (dispatch) => {
+    return async () => {
+        const response = await Jsonserver.get("/blogPosts")
+        console.log(response.data);
+        dispatch({ type: "getPosts", payload: response.data });
+    }
+}
+
 const addPost = (dispatch) => {
-    return (title, message, callback) => {
-        dispatch({ type: "add", payload: { title, message } })
-        if (callback) {
-            callback();
-        }
+    return async (title, message, callback) => {
+         await Jsonserver.post("/blogPosts", {title, message});
+         if (callback) {
+             callback();
+         }
+    };
+};
+
+const deletePost = (dispatch) => {
+    return async (postId) => {
+        await Jsonserver.delete(`/blogPosts/${postId}`)
+        dispatch({ type: "delete", payload: postId })
     };
 };
 
 const editPost = (dispatch) => {
-    return (id, title, message, callback) => {
+    return async (id, title, message, callback) => {
+        await Jsonserver.put(`/blogPosts/${id}`, {title, message})
         dispatch({ type: "edit", payload: { id, title, message } })
         if (callback) {
             callback();
@@ -44,14 +54,8 @@ const editPost = (dispatch) => {
     };
 };
 
-const deletePost = (dispatch) => {
-    return (postId) => {
-        dispatch({ type: "delete", payload: postId })
-    };
-};
-
 export const { Context, Provider } = createDataContext(
     blogPostReducer,
-    { addPost, deletePost, editPost },
+    { addPost, deletePost, editPost, getBlogPosts },
     []
 );
